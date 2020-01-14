@@ -1,0 +1,1 @@
+# VASTmanual_inJapanese
