@@ -1,6 +1,6 @@
 ## VASTの日本語マニュアル  
 * 本ページは，Vector Autoregressive Spatio-Temporal (VAST) Modelのパッケージ`{VAST}`を日本語で解説するサイトです
-* [テストコード](<script src="https://gist.github.com/Yuki-Kanamori/42d04d6235170f27e6d7dfce589722a2.js"></script>)の順に説明を進めます
+* [テストコード](https://gist.github.com/Yuki-Kanamori/42d04d6235170f27e6d7dfce589722a2.js) の順に説明を進めます
 
 ## コードの構成
 1.
