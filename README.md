@@ -16,7 +16,7 @@
 ## 参考資料
 * VASTのワークショップ  https://github.com/ShotaNishijima/vast_workshop2020.git  
   よくあるインストール問題やcppファイルがコンパイルできない問題について，issueが上がっている
-* ggvast　
+* ggvast　https://github.com/Yuki-Kanamori/ggvast.git
   VASTで推定した結果を描画するためのパッケージ
 
 ## INLA
