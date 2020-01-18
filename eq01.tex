@@ -1,0 +1,85 @@
+\documentclass[12pt]{article}
+\usepackage{times}
+\usepackage{plext}
+\usepackage{cite}
+\usepackage{setspace}
+\usepackage{float}
+\usepackage{lineno}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{array, booktabs}
+\usepackage[top=10truemm,bottom=5truemm,left=30truemm,right=10truemm]{geometry}
+\usepackage{threeparttable}
+\usepackage{amsmath}
+\usepackage{breqn}
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\tablename}{Table}
+\begin{document}
+%\setcounter{page}{1}
+\renewcommand\citeleft{(} 
+\renewcommand\citeright{)}
+
+一般式
+\begin{dmath}
+%\footnotesize
+  p_1(i) = \beta_{1}(c_{i}, t_{i}) + \sum_{f = 1}^{n_{\omega 1}} L_{\omega 1}(c_i, f) \omega_1(s_i, f) + \sum_{f = 1}^{n_{\varepsilon1}}L_{\varepsilon1}(c_i,f)\varepsilon_1(s_i,f,t_i)
++\sum_{f = 1}^{n_{\eta1}}L_1(c_i,f)\eta_1(v_i,f)+\sum_{p = 1}^{n_p}\gamma_1(c_i,t_i,p)X(x_i,t_i,p)+\sum_{k=1}^{n_k}\lambda_1(k)Q(i,k)
+%\normalsize
+\end{dmath}
+
+\begin{dmath}
+  p_2(i) = \beta_{2}(c_{i}, t_{i}) + \sum_{f = 1}^{n_{\omega 2}} L_{\omega 2}(c_i, f) \omega_2(s_i, f) + \sum_{f = 1}^{n_{\varepsilon2}}L_{\varepsilon2}(c_i,f)\varepsilon_2(s_i,f,t_i)
++\sum_{f = 1}^{n_{\eta2}}L_2(c_i,f)\eta_2(v_i,f)+\sum_{p = 1}^{n_p}\gamma_2(c_i,t_i,p)X(x_i,t_i,p)+\sum_{k=1}^{n_k}\lambda_2(k)Q(i,k)
+\end{dmath}
+\hrulefill
+
+Part Ⅰ
+\begin{dmath}
+  p_1(i) = \beta_{1}(t_{i}) + \omega_1(s_i) + \varepsilon_1(s_i,t_i)
+\end{dmath}
+
+\begin{dmath}
+  p_2(i) = \beta_{2}(t_{i}) + \omega_2(s_i) + \varepsilon_2(s_i,t_i)
+\end{dmath}
+\hrulefill
+
+Part Ⅲ (i)
+%\hspace{1.5cm} (i)
+\begin{dmath}
+  p_1(i) = \beta_{1}(t_{i}) + \omega_1(s_i) + \varepsilon_1(s_i,t_i) + \lambda_1Q(i)
+\end{dmath}
+\begin{dmath}
+  p_2(i) = \beta_{2}(t_{i}) + \omega_2(s_i) + \varepsilon_2(s_i,t_i) + \lambda_2Q(i)
+\end{dmath}
+\hspace*{2cm}\dotfill
+
+\hspace{1.2cm} (ii)
+%\hspace{1.5cm} (i)
+\begin{dmath}
+  p_1(i) = \beta_{1}(t_{i}) + \omega_1(s_i) + \varepsilon_1(s_i,t_i) + \eta_1(v_i)
+\end{dmath}
+\begin{dmath}
+  p_2(i) = \beta_{2}(t_{i}) + \omega_2(s_i) + \varepsilon_2(s_i,t_i) + \eta_2(v_i)
+\end{dmath}
+\hspace*{2cm}\dotfill
+
+\hspace{1.2cm} (iii)
+%\hspace{1.5cm} (i)
+\begin{dmath}
+  p_1(i) = \beta_{1}(c_{i}, t_{i}) + \sum_{f = 1}^{n_{\omega 1}} L_{\omega 1}(c_i, f) \omega_1(s_i, f) + \sum_{f = 1}^{n_{\varepsilon1}}L_{\varepsilon1}(c_i,f)\varepsilon_1(s_i,f,t_i)
+\end{dmath}
+\begin{dmath}
+  p_2(i) = \beta_{2}(c_{i}, t_{i}) + \sum_{f = 1}^{n_{\omega 2}} L_{\omega 2}(c_i, f) \omega_2(s_i, f) + \sum_{f = 1}^{n_{\varepsilon2}}L_{\varepsilon2}(c_i,f)\varepsilon_2(s_i,f,t_i)
+\end{dmath}
+\hspace*{2cm}\dotfill
+
+\hspace{1.2cm} (iv)
+%\hspace{1.5cm} (i)
+\begin{dmath}
+  p_1(i) = \beta_{1}(t_{i}) + \omega_1(s_i) + \varepsilon_1(s_i,t_i) + +\sum_{p = 1}^{n_p}\gamma_1(t_i,p)X(x_i,t_i,p)
+\end{dmath}
+\begin{dmath}
+  p_2(i) = \beta_{2}(t_{i}) + \omega_2(s_i) + \varepsilon_2(s_i,t_i) + +\sum_{p = 1}^{n_p}\gamma_2(t_i,p)X(x_i,t_i,p)
+\end{dmath}
+
+%\end{linenumbers}
+\end{document}
