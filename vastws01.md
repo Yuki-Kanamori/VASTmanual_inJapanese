@@ -1,28 +1,16 @@
----
-title: "vastws01"
-author: "Yuki Kanamori"
-date: "2020/1/17"
-output: pdf_document
----
-
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
-
 # VAST workshop 2020  
 執筆: 金森由妃（研究支援＠中央水研）  
 kana.yuki@fra.affrac.go.jp
 
+<div style="page-break-before:always"></div>
 
-## Part 1: 年効果だけのモデル
+# Part 1: 年効果だけのモデル
 まずは年効果のみを入れたモデルを単一種のデータに適用してみる．モデルは，・・・．  
-本解析で必要な情報は『年，CPUE（or アバンダンスと努力量），緯度，経度』である．
+Part1で必要な情報は**『年，CPUE（or アバンダンスと努力量），緯度，経度』のみ**である．
+***
 ### 0. フォルダとデータの作成
 1. ワークショップ用のフォルダ『vastws』を任意の場所に作成し，パスを確認する．  
-  VASTのアウトプットは容量が大きいため，**フォルダをデスクトップに作成することはお勧めしない．**  
+  VASTのアウトプットは容量が大きいため，**フォルダをデスクトップに作成することはお勧めしない**  
 2. 作成したフォルダに，解析で用いるデータ（csvファイルなど）を入れる
 3. 確認したパスを以下のように入力し，作成したフォルダを作業ディレクトリとして設定する    
 ```
@@ -38,15 +26,14 @@ require(TMB)
 ``
 df = read.csv("####.csv")
 ``
-6. 各列に『年，CPUE（あるいは，アバンダンスと努力量），緯度，経度』が入ったデータフレーム（tidyデータ）を作成する．オブジェクト名は，dfとしたままでよい．
-<br />
-<br />
+6. 各列に『年，CPUE（あるいは，アバンダンスと努力量），緯度，経度』が入ったデータフレーム（tidyデータ）を作成する．オブジェクト名は，dfとしたままでよい
+<div style="page-break-before:always"></div>
 
 ### 1. 各種設定
 #### 1.1 cppファイルのバージョンを指定
 * cppファイルとはTMBを動かすコードのことで，C++言語で書かれている
 * cppファイルのバージョンは，**VASTやTMBなどのバージョンとは別物**
-* 最新版では色々なオプションがあるが，CPUE標準化では使わない場合が多い
+* 最新版では色々なオプションが追加されている（CPUE標準化では使わない場合が多い）
 ```
 # 最新版のcppファイルを指定する時
 Version = get_latest_version(package = "VAST")
@@ -55,7 +42,7 @@ Version = get_latest_version(package = "VAST")
 ```
 Version = "VAST_v4_2_0"
 ```  
-* ``VAST_v4_2_0``あたりが安定しているっぽい
+* 経験上，`VAST_v4_2_0`あたりが安定しているように感じる
 <br />
 <br />
 
@@ -109,16 +96,14 @@ FieldConfig = c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1)
 RhoConfig = c(Beta1 = 0, Beta2 = 0, Epsilon1 = 0, Epsilon2 = 0)
 ```
 * 今回は年を固定効果，時空間のランダム効果の年は独立と考えている
-* $\beta$には，分散が年で変わる(= 1)，ランダムウォーク(= 2)，定数(= 3)，AR(= 4)が選択できる．
-* $\epsilon$には，ランダムウォーク(= 2)，AR(= 4)が選択できる．
+* Betaには，分散が年で変わる(= 1)，ランダムウォーク(= 2)，定数(= 3)，AR(= 4)が選択できる．
+* Epsilonには，ランダムウォーク(= 2)，AR(= 4)が選択できる．
 
 ```
 OverdispersionConfig = c("Eta1" = 0, "Eta2" = 0)
 ```
 * 詳細はPart 2で紹介するため，とりあえず0にする
 
-<br />
-<br />
 
 ```
 ObsModel = c(PostDist = , Link = )
@@ -126,15 +111,13 @@ ObsModel = c(PostDist = , Link = )
 * 観察誤差の分布とリンク関数についての設定．非常にたくさんの選択肢がある．詳細は?make_dataを参照されたい
 * ここでは簡単のため，代表的な場合を紹介する
 # データの種類とパラメータの選択を表にまとめる
-<br />
-<br />
+<div style="page-break-before:always"></div>
 
 #### 1.4 データの範囲1
 ```
 strata.limits = data.frame('STRATA'="All_areas")
 ```
 * 変更の必要はない
-<br />
 <br />
 
 #### 1.5 データの範囲2
@@ -143,7 +126,6 @@ Region = "other"
 ```
 * 自分のデータを解析する場合は，"other"に変更
 * FishStatsUtilsに入っているテストデータを解析する時のみ，適切な地域を選択する．
-<br />
 <br />
 
 #### 1.6 設定の保存
@@ -167,9 +149,8 @@ capture.output(Record, file = paste0(DateFile, "/Record.txt"))
 ```
 * 作業ディレクトリの直下に，``VAST_output``というフォルダが作成され，結果が入れられていく．
 * デフォルトのままだとフォルダ名が解析ごとに同じになるため，**解析結果が上書き保存されてしまう**
-* ``paste0(getwd(), "/vast", Sys.Date(), "_lnorm_log", n_x, sakana)``などどしておくと，フォルダ名を見ただけで『いつ，どんなモデルで，どれくらいのknot数で，どの魚種を解析した結果なのか』が分かる
-<br />
-<br />
+* ``paste0(getwd(), "/vast", Sys.Date(), "_lnorm_log", n_x, sakana)``などどしておくと，フォルダ名を見ただけで『いつ，どんなモデルで，knot数がいくつで，どの魚種を解析した結果なのか』が分かる
+<div style="page-break-before:always"></div>
 
 ### 2. VASTに合わせたデータセットの準備
 #### 2.1 データフレームの作成
@@ -191,29 +172,29 @@ Data_Geostat = df %>%
          AreaSwept_km2 = effort)
 ```
 * **VASTに渡すデータのオブジェクト名は，必ずData_Geostat**
-* **列名はオリジナルで作成せず，VAStのデフォルトに合わせる．また，列名はキャメルケース（大文字始まり）で書く**
-* Data_Geostatでない場合，列名をオリジナルで作成した場合，列名がキャメルケースでない場合は，以降のコードを修正する必要が出てくる（関数の中身も修正しなければいけないので，めちゃくちゃ大変）
-<br />
+* **列名はオリジナルで作成せず，VAStのデフォルトに合わせる．また列名はキャメルケース（大文字始まり）で書く**
+* オブジェクト名がData_Geostatでない場合，列名をオリジナルで作成した場合，列名がキャメルケースでない場合は，以降のコードを修正する必要が出てくる（関数の中身も修正しなければいけないので，めちゃくちゃ大変）
 <br />
 
 #### 2.2 データフレームから位置情報を取得
 ```
+# コード確認！
 Extrapolation_List = FishStatsUtils::make_extrapolation_info(
   Regio = Region, #zone range in Japan is 51:56
   strata.limits = strata.limits,
-  observations_LL = Data_Geostat[, c("Lat", "Lon")],
-)
+  observations_LL = Data_Geostat[, c("Lat", "Lon")]
+  )
 ```
 * 緯度経度をUTM(Universal Transverse Mercator)座標へ変換している
 * データフレームから検出した位置情報（zone）を教えてくれるので確認する
 ```
+# 出力例
+# この表示はエラーではない
+# 日本は51~56の範囲に入る
 Using strata 1
 convUL: For the UTM conversion, automatically detected zone 9.   
 convUL: Converting coordinates within the northern hemisphere.
-# 日本は，51~56の範囲に入る
-# この表示はエラーではない
 ```
-<br />
 <br />
 
 #### 2.4 観測点をknotに変換
@@ -234,6 +215,8 @@ Spatial_List = FishStatsUtils::make_spatial_info(
 ```
 * 『1.2 空間の設定』の情報を使っている
 ```
+# 出力例
+# これもエラーではない
 convUL: Converting coordinates within the northern hemisphere.  
 convUL: For the UTM conversion, used zone 9 as specified  
 convUL: Converting coordinates within the northern hemisphere.  
@@ -244,9 +227,7 @@ Num=1 Current_Best=Inf New=172166.9
 ・
 convUL: Converting coordinates within the northern hemisphere.  
 convUL: Converting coordinates within the northern hemisphere.  
-# これもエラーではない
 ```
-<br />
 <br />
 
 #### 2.5 データフレームの保存
@@ -254,11 +235,10 @@ ggvastで描画するためのオリジナルコード
 ```
 Data_Geostat = cbind(Data_Geostat,
                      knot_i = Spatial_List[["knot_i"]],
-                     zone = Extrapolation_List[["zone"]] #
+                     zone = Extrapolation_List[["zone"]] # 加筆した部分
                      )    
 write.csv(Data_Geostat, "Data_Geostat.csv")
 ```
-<br />
 <br />
 
 ### 3. パラメータの設定
@@ -283,6 +263,7 @@ TmbData = make_data(
 # 引数の表を入れる
 * その他については，?make_dataを参照
 ```
+# 出力例
 FieldConfig_input is:  
 Component_1 Component_2  
 Omega Epsilon
@@ -292,7 +273,6 @@ Beta OverdispersionConfig_input is: Eta1 Eta2
 Calculating range shift for stratum #1:
 ```
 # 100%の時について入れる
-<br />
 <br />
 
 #### 3.2 パラメータリストを作成
@@ -310,7 +290,6 @@ TmbList = VAST::make_model(TmbData = TmbData,
 # パラメータの抜き方
 # パラメータについて表？
 <br />
-<br />
 
 #### 3.3 パラメータの推定
 ```
@@ -324,6 +303,7 @@ Opt = TMBhelper::fit_tmb(obj = Obj,
                           bias.correct = TRUE)
 ```
 ```
+# 出力例
 Constructing atomic D_lgamma
 Optimizing tape... Done
 iter: 1 value: 13012.14 mgc: 36.81998 ustep: 1
@@ -346,7 +326,6 @@ The model is likely not converged
 ```
 * 『収束していない』と出るが，モデル診断で問題が無い場合でも出てくるメッセージなので，『終わったよ』の合図くらいに思っておけばよい
 <br />
-<br />
 
 #### 3.4 推定結果の保存
 ```
@@ -358,8 +337,7 @@ Save = list("Opt" = Opt,
 save(Save, file = paste0(DateFile,"/Save.RData"))
 ```
 * 作業ディレクトリに推定結果が``Save.RData``として保存される
-<br />
-<br />
+<div style="page-break-before:always"></div>
 
 ### 4. 描画
 何も考えずに全て実行する
@@ -402,8 +380,8 @@ plot_residuals(Lat_i = Data_Geostat[,'Lat'],
                Report = Report,
                Q = Q,
                savedir = DateFile,
-               spatial_list = Spatial_List, #
-               extrapolation_list = Extrapolation_List, #
+               spatial_list = Spatial_List, # ここ！
+               extrapolation_list = Extrapolation_List, # ここ！
                MappingDetails = MapDetails_List[["MappingDetails"]],
                PlotDF = MapDetails_List[["PlotDF"]],
                MapSizeRatio = MapDetails_List[["MapSizeRatio"]],
@@ -472,7 +450,7 @@ plot_range_index(Report = Report,
 * バイアスコレクションは必須（Thorson & ristensen 2016）なので，4.8では`use_biascorr = TRUE`にする
 * 4.8と4.9で以下のようなメッセージが出るが，エラーではない
 ```
-# 4.7
+# 4.8
 Using bias-corrected estimates for abundance index (natural-scale)...  
 Using bias-corrected estimates for abundance index (log-scale)...
 ```
@@ -486,9 +464,7 @@ Using bias-corrected estimates for effective area occupied (log scale)...
 
 ```
 
-
-<br />
-<br />
+<div style="page-break-before:always"></div>
 
 ### 5. アウトプットの見方
 『4. 描画』で作成されたアウトプットについていくつか紹介する．全てを紹介することはできないので，VASTのgithubの『deprecated_examples』フォルダに入っている資料（ワークショップHPのマニュアルのリンク先）を参照されたい
@@ -549,9 +525,9 @@ Using bias-corrected estimates for effective area occupied (log scale)...
 <br />
 
 
-***
+<div style="page-break-before:always"></div>
 
-## Part 2: ggvast
+# Part 2: ggvastパッケージを使った描画
 ggvastとは，VASTの推定結果を作図するためのパッケージ．VASTではFishStatsUtilsを用いて作図をしているが，
 * 後日，Save.RDataを使って作図をすることができない
 * VASTやFishStatsUtilsが変更されると，これまでのコードで作図ができなくなることがある
@@ -560,7 +536,8 @@ ggvastとは，VASTの推定結果を作図するためのパッケージ．VAST
   * 推定密度のマップでは，NorthtingやEastingで表示される
 * 推定密度のマップとリジェンドが別々のファイルになる
 * COGの変化がkmで表示される
-などの不便な点がある．ggvast はこれらの問題を解決し，様々なハビタット，生物，研究分野でVASTを使いやすくすることを目標としている．
+などの不便な点がある．ggvast はこれらの問題を解決し，様々なハビタット，生物，研究分野でVASTを使いやすくすることを目標としている
+***
 ### 0. ggvastのインストール
 ```
 require(devtools)
@@ -568,4 +545,78 @@ devtools::intrall_packeage("ggvast")
 ```
 
 ### 1. VASTの推定結果
-#### 1.1 cppファイルのバージョンを指定
+#### 1.1
+
+
+
+<div style="page-break-before:always"></div>
+
+# Part 3: 応用モデル
+Part1では年の効果のみを入れた単純なモデルを単一種に適用した．  
+Part3ではより複雑なモデルとして  
+  * **catchabilityへの影響**
+  * **overdispersionへの影響**
+  * **複数カテゴリー（種，年齢，銘柄が複数ある場合）の解析**
+  * **環境の影響**
+を紹介する．
+* プログラムコードは，**Part1から変更しなければならない部分のみを紹介する**
+***
+### 1. catchabilityへの影響
+catchability（魚の採集率）は，漁具や船，月によって変化していることがある．　　
+ここではそのような現象をモデリングしてみる．  
+数式は，・・・を参照されたい．  
+**なお月の効果を考慮したい場合には，『2. overdispersionへの影響』でも扱うことができる．『2. overdispersionへの影響』との違いは，固定効果として推定する点と，漁具などは（直接生物量に影響するのではなく）catchabilityに影響すると考える点である．**
+
+#### 0. データの作成
+ 各列に『年，CPUE（あるいは，アバンダンスと努力量），緯度，経度，catchabilityに影響する要因（漁具・船・月など）』が入ったデータフレーム（tidyデータ）を作成する．オブジェクト名は，dfとしたままでよい．
+<br />
+
+#### 2. VASTに合わせたデータセットの準備
+#### 2.1 データフレームの作成
+```
+head(df)
+
+# CPUEデータの時
+Data_Geostat = df %>%
+  mutate(Year = year,
+         Lon = lon,
+         Lat = lat,
+         Catch_KG = cpue,
+         Gear = gear)
+# アバンダンスと努力量データの時
+Data_Geostat = df %>%
+  mutate(Year = year,
+         Lon = lon,
+         Lat = lat,
+         Catch_KG = cpue,
+         Gear = gear)
+ ```
+ * **VASTに渡すデータのオブジェクト名は，必ずData_Geostat**
+ * **列名はオリジナルで作成せず，VAStのデフォルトに合わせる．また列名はキャメルケース（大文字始まり）で書く**
+ * オブジェクト名がData_Geostatでない場合，列名をオリジナルで作成した場合，列名がキャメルケースでない場合は，以降のコードを修正する必要が出てくる（関数の中身も修正しなければいけないので，めちゃくちゃ大変）
+ <br />
+
+#### 3. パラメータの設定
+#### 3.1 TMBに渡すデータを作成する
+ ```
+ TmbData = make_data(
+   Version = Version,
+   FieldConfig = FieldConfig,
+   OverdispersionConfig = OverdispersionConfig,
+   RhoConfig = RhoConfig,
+   ObsModel = ObsModel,
+   c_iz = rep(0, nrow(Data_Geostat)),
+   b_i = Data_Geostat[, 'Catch_KG'],
+   a_i = Data_Geostat[, 'AreaSwept_km2'], # CPUEデータの場合は不要
+   s_i = Data_Geostat[, 'knot_i'] - 1,
+   t_i = Data_Geostat[, 'Year'],
+   Q_ik = model.matrix(as.formula(~0+Gear), data = Data_Geostat) # 加筆部分
+   spatial_list = Spatial_List,
+   Options = Options,
+   Aniso = TRUE
+ ```
+ * Q_ikには数値しか入らないため，カテゴリカル変数の場合はダミー変数を作成する必要がある
+
+ ####
+
+<span style="color: red; ">赤文字</span>
