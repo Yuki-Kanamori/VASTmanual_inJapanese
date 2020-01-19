@@ -10,16 +10,19 @@
 <br />
 # VAST workshop 2020
 <div style="text-align: right;">
-金森由妃（研究支援＠中央水研）
+2020/02/07
 </div>
 <div style="text-align: right;">
-kana.yuki@fra.affrac.go.jp
+金森由妃　研究支援＠中央水研
+</div>
+<div style="text-align: right;">
+Version 1.1.9000
 </div>
 
 <div style="page-break-before:always"></div>
 
 # Part Ⅰ: 年効果だけのモデル
-まずは年効果だけが入ったモデルを単一種のデータに適用してみる．モデルは，・・・．  
+まずは年効果だけが入ったモデル（付録(3)(4)式）を単一種のデータに適用してみる．
 Part1で必要な情報は**『年，CPUE（or アバンダンスと努力量），緯度，経度』のみ**である．
 ***
 ### 0. フォルダとデータの作成
@@ -33,32 +36,61 @@ setwd("dir = dirname")
 ```
 4. 解析で用いるパッケージを呼び出す
 ```
+# 必須
 require(VAST)
 require(TMB)
+
+# 自分がデータ形成で必要なもの
 require(tidyverse)
 ```
 5. データを読み込み，オブジェクト名をdfとする．例えばcsvファイルを読み込む場合は  
 `df = read.csv("####.csv")`
-6. 各列に『年，CPUE（あるいは，アバンダンスと努力量），緯度，経度』が入ったデータフレーム（tidyデータ）を作成する．オブジェクト名はdfのままで
+
+6. データを確認する
+```
+summary(df)
+```
+
+<div style="page-break-before:always"></div>
+
+7. 各列に『年，CPUE（あるいは，アバンダンスと努力量），経度，緯度，種名』が入ったデータフレーム（tidyデータ）を作成し，各列名を『year, cpue (abundanceとeffort), lon, lat, spp』に変更する．オブジェクト名はdfのままでよい
+#### <span style="color: red; ">注意点</span>
+* 単一種のモデルを解析するので，**dfに複数種のデータ入っている場合は解析する種を1種決めて抽出する**
+* 長期データの場合は計算に時間がかかるので，**ワークショップで解析するデータは5年分までとする．** つまり，dfに6年以上のデータが入っている場合には，5年分を抽出する
+
+```
+# 解析する種がマサバ，解析する年が2015~の場合
+df = df %>%
+  # マサバの2015~2019年のデータを抽出
+  dplyr::filter(魚 == "マサバ", dplyr::between(年, 2015, 2019)) %>%
+  # 解析に必要な列を選択
+  select(年, cpue, 緯度, 経度, 魚) %>%
+  # 列名を変更
+  dplyr::rename(year = 年, lon = 緯度, lat = 経度, spp = 魚)
+```
 
 CPUEデータの例
-|  year  |  cpue  |  lon  |  lat  |
-| ---- | ---- | ---- | ---- |
-|  2015  |  2.5  |  135  |  30  |
-|  2015  |  0.2  |  135.5  |  30  |
+|  year  |  cpue  |  lon  |  lat  | spp  |
+| ---- | ---- | ---- | ---- | ---- |
+|  2015  |  2.5  |  135  |  30  |  マサバ  |
+|  2015  |  0.2  |  135.5  |  30  |  マサバ  |
 |    |    |    |    |
-|  2019  |  1.2  |  135.5  |  30  |
+|  2019  |  1.2  |  135.5  |  30  |  マサバ  |
 
 
 アバンダンスと努力量の例
-|year | abundance  |  effort  |  lon  |  lat  |
-|---- |---- | ---- | ---- | ---- |
-| 2015| 2.5  |  2  |  135  |  30  |
-| 2015| 0.2  |  4  |  135.5  |  30  |
+|year | abundance  |  effort  |  lon  |  lat  | spp  |
+|---- |---- | ---- | ---- | ---- | ---- |
+| 2015| 2.5  |  2  |  135  |  30  |  マサバ  |
+| 2015| 0.2  |  4  |  135.5  |  30  |  マサバ  |
 | |   |    |    |    |
-| 2019| 1.3  |  5  |  135.5  |  30  |
+| 2019| 1.3  |  5  |  135.5  |  30  |  マサバ  |
 
----
+<div style="page-break-before:always"></div>
+
+
+
+<div style="page-break-before:always"></div>
 
 ### 1. 各種設定
 #### 1.1 cppファイルのバージョンを指定
@@ -78,7 +110,7 @@ Version = "VAST_v4_2_0"
 <div style="page-break-before:always"></div>
 
 #### 1.2 空間の設定
-K平均法を用いたknot決めについての設定を行う．ここでの設定について理解するためには，Gaussian field，Gaussian Markov Random Field，Matérn関数，INLA，SPDE，有限要素法などの知識が必要になる．VASTを動かすだけならば深い理解がなくても大丈夫なので，とりあえず指示通りに設定することをお勧めする
+K平均法を用いたknot決めについての設定を行う．ここでの設定について理解するためには，Gaussian field，Gaussian Markov Random Field，Matérn関数，INLA，SPDE，有限要素法などの知識が必要になる．VASTを動かすだけならば深い理解がなくても大丈夫なので，とりあえず指示通りに設定することをお勧めする．
 
 ---
 
@@ -132,7 +164,7 @@ n_x = 100
 ```
 FieldConfig = c(Omega1 = 1, Epsilon1 = 1, Omega2 = 1, Epsilon2 = 1)
 ```
-* カテゴリー（種，年齢，銘柄など）に共通の要因の数を設定する部分
+* カテゴリー（種，年齢，銘柄など）に共通する要因の数をいくつ推定するのかを設定する部分
 * 上限はカテゴリーの数
 * **今回は単一種を解析するため，最大数は1**  
 <br />
@@ -240,7 +272,6 @@ Data_Geostat = df %>%
 * **VASTに渡すデータのオブジェクト名は，必ずData_Geostat**
 * **列名はオリジナルで作成せず，VAStのデフォルトに合わせる．また列名はキャメルケース（大文字始まり）で書く**
 * オブジェクト名がData_Geostatでない場合，列名をオリジナルで作成した場合，列名がキャメルケースでない場合は，以降のコードを修正する必要が出てくる（関数の中身も修正しなければいけないので，めちゃくちゃ大変）
-<br />
 
 #### 2.2 データフレームから位置情報を取得
 ```
@@ -261,7 +292,6 @@ Using strata 1
 convUL: For the UTM conversion, automatically detected zone 9.   
 convUL: Converting coordinates within the northern hemisphere.
 ```
-<br />
 
 #### 2.4 観測点をknotに変換
 ```
@@ -294,8 +324,6 @@ Num=1 Current_Best=Inf New=172166.9
 convUL: Converting coordinates within the northern hemisphere.  
 convUL: Converting coordinates within the northern hemisphere.  
 ```
-<div style="page-break-before:always"></div>
-
 #### 2.5 データフレームの保存
 ggvastで描画するためのオリジナルコード
 ```
@@ -306,7 +334,7 @@ Data_Geostat = cbind(Data_Geostat,
 write.csv(Data_Geostat, "Data_Geostat.csv") # 加筆した部分
 ```
 
----
+<div style="page-break-before:always"></div>
 
 ### 3. パラメータの設定
 #### 3.1 TMBに渡すデータを作成する
@@ -339,13 +367,16 @@ Calculating range shift for stratum #1:
 ```
 #### 遭遇率が100%でエラーが出た場合
 * > 0データのみを解析することになる（デルタ型のモデルではなくなる）
-* 1.3に戻り，モデルの設定を変更する
+* 1.3に戻りモデルの設定を変更し，1.4以降を実行する
 ```
 FieldConfig = c(Omega1 = 0, Epsilon1 = 0, Omega2 = 1, Omega2 = 1)
 ```
 ```
 ObsModel = c(PostDist = ___, Link = 3)
 ```
+
+#### 遭遇率が0%でエラーが出た場合
+* 0に戻りデータが無い年を除去し，1以降を実行する
 
 <br />
 
@@ -424,7 +455,6 @@ Save = list("Opt" = Opt,
             "TmbData" = TmbData)
 save(Save, file = paste0(DateFile,"/Save.RData"))
 ```
-* 作業ディレクトリに推定結果が``Save.RData``として保存される
 <div style="page-break-before:always"></div>
 
 ### 4. 描画
@@ -560,60 +590,66 @@ Using bias-corrected estimates for effective area occupied (log scale)...
 ---
 
 #### 5.1 解析したデータの空間情報
-**``Data_and_knots.png``**
+### **``Data_and_knots.png``**
 * 上の図2つが解析した空間範囲のマップ
 * 下の図がknotの位置
 <br />
-<br />
+---
 
 #### 5.2　モデル診断
-**`parameter_estimates.txt`**
+### **`parameter_estimates.txt`**
 * パラメータの推定値が入っている
 * `$diagnostics`のMLE列の値がLowerとUpperに近くなっていないか，final_gradient列の値が0に近くなっているかが収束の判断材料となる
 
-**`QQ_Fnフォルダ`**
-* `Posterior_Predictive-Histogram-1.jpg`が$y = x$に近いかどうかが収束の判断材料となる
+### **`QQ_Fnフォルダ`**
+* `Posterior_Predictive-Histogram-1.jpg`が y = x に近いかどうかが収束の判断材料となる
 
-**`Diag--Encounter_prob.png`**
+### **`Diag--Encounter_prob.png`**
 * ピンクのリボンは95%信頼区間
 
-<br />
-<br />
+<div style="page-break-before:always"></div>
 
-#### 5.3 推定資源量指標値の年変化
-**`Index-Biomass.png`**
-* 推定資源量指数の平均値とSD
-* 推定資源量指数とは各knotの推定相対密度に各knotの面積を掛けたもの．詳細はThorson(2019)を参照されたい
-
-**`Table_for_SS3.csv`**
-* 『Index-Biomass.png』の元データ
-<br />
-<br />
-
-#### 5.4 推定相対密度のマップ
-**`Dens.png`**
+#### 5.3 推定相対密度のマップ
+### **`Dens.png`**
+* 算出式は付録(13)-(15)式を参照
 * 赤いほど相対密度が高いことを表す
-<br />
-<br />
 
-#### 5.5 重心の変化
-**`center_of_gravity.png`**
-* 『Dens.png』のデータから重心を計算し，年変化を描画したもの
-* 重心の算出式はThorson(2019)を参照されたい
 <br />
-<br />
+---
 
-#### 5.6 有効面積
-**`Effective_Area.png`**
-* 算出式はThorson(2019)を参照されたい
+#### 5.4 推定資源量指標値の年変化
+### **`Index-Biomass.png`**
+* 推定資源量指数の平均値とSD
+* 算出式は付録(16)式を参照
+
+### **`Table_for_SS3.csv`**
+* 『Index-Biomass.png』の元データ
+
 <br />
+---
+
+#### 5.5 有効面積
+### **`Effective_Area.png`**
+* 算出式は付録(17)-(18)式を参照
+
 <br />
+---
+
+
+#### 5.6 重心の変化
+### **`center_of_gravity.png`**
+* 算出式は付録(19)式を参照
+
+<br />
+---
+
+
 
 #### 5.7 anisotropy
-**`Aniso.ping`**
-* 空間相関の強度と歪みを表す
-<br />
-<br />
+### **`Aniso.ping`**
+* 空間相関の方向と方強度を表す
+
+
 
 
 <div style="page-break-before:always"></div>
@@ -634,16 +670,148 @@ ggvastとは，VASTの推定結果を作図するためのパッケージ．VAST
 ```
 require(devtools)
 devtools::intrall_packeage("ggvast")
+require(ggvast)
 ```
 
-### 1. VASTの推定結果
-#### 1.1
+<div style="page-break-before:always"></div>
 
+### 1. 重心を地図上にプロットする
+*　ノミナルの重心を地図上にプロットしたい場合は，`get_cog()`で重心を計算してから`map_cog()`で作図する
+
+#### map_cog()
+```
+# please change here --------------------------------------------
+vast_output_dirname = "////" # vastの推定結果が入っているディレクトリ
+data_type = c("VAST", "nominal")[1]
+category_name = c("spotted") #カテゴリーの名前（魚種名や銘柄など）　nominalの場合はNULL
+#category_name = c("spotted","chub") #複数カテゴリーの場合
+
+unique(map_data("world")$region)
+region = "Japan" #作図する地域を選ぶ
+
+ncol = 5 #横にいくつ図を並べるか（最大数 = カテゴリー数）
+shape = 16 #16はclosed dot
+size = 1.9 #shapeの大きさ
+
+package = c("SpatialDeltaGLMM", "FishStatsUtils")[2]
+map_output_dirname = "////" #作図を入れるディレクトリ
+fileEncoding = "CP932"
+
+# load data -----------------------------------------------------
+setwd(dir = vast_output_dirname)
+load("Save.RData")
+DG = read.csv("Data_Geostat.csv")
+
+# make figures ----------------------------------
+map_cog(data_type = data_type,
+        category_name = category_name,
+        region = region,
+        ncol = ncol,
+        shape = shape,
+        size = size,
+        package = package,
+        map_output_dirname = map_output_dirname,
+        fileEncoding = fileEncoding)
+```
+
+#### get_cog()
+```
+# please change here --------------------------------------------
+vast_output_dirname = "///" #vastの推定結果が入っているディレクトリ
+
+# load data -----------------------------------------------------
+setwd(dir = vast_output_dirname)
+DG = read.csv("Data_Geostat.csv")
+
+# make data-frame ----------------------------------
+cog_nom = get_cog(data = DG)
+```
+<br />
+---
+
+### 2. 局所密度を地図上にプロットする
+* VASTの推定結果の場合は，まず`get_dens()`で`Save.RData`から推定結果を抽出し，その後`map_dens()`でプロットする
+#### get_dens()
+```
+# please change here --------------------------------------------
+vast_output_dirname = "///" #vastの推定結果が入っているディレクトリ
+category_name = c("spotted") #カテゴリーの名前（魚種名や銘柄など）
+#category_name = c("spotted","chub") #複数カテゴリーの場合
+
+# load data -----------------------------------------------------
+setwd(dir = vast_output_dirname)
+load("Save.RData")
+DG = read.csv("Data_Geostat.csv")
+
+# get data-frame ----------------------------------
+df_dens = get_dens(category_name = category_name)
+```
+
+#### map_dens()
+```
+# load data -----------------------------------------------------
+vast_output_dirname = "///" #vastの推定結果が入っているディレクトリ
+setwd(dir = vast_output_dirname)
+load("Save.RData")
+DG = read.csv("Data_Geostat.csv")
+#DG = DG %>% filter(Catch_KG > 0) #> 0データのみをプロットしたい場合
+
+# please change here --------------------------------------------
+data = df_dens #VASTの結果ならdf_dens　ノミナルならDG = read.csv("Data_Geostat.csv")
+unique(map_data("world")$region)
+region = "Japan" #作図する地域を選ぶ
+scale_name = "Log density" #凡例　色の違いが何を表しているのかを書く
+ncol = 5 #横にいくつ図を並べるか（最大数 = 年数）
+shape = 16 #16はclosed dot
+size = 1.9 #shapeの大きさ
+map_output_dirname = "///" # 作図を入れるディレクトリ
+
+# make figures ----------------------------------
+map_dens(data = data,
+         region = region,
+         scale_name = scale_name,
+         ncol = ncol,
+         shape = shape,
+         size = size,
+         map_output_dirname =  map_output_dirname)
+```
+<br />
+---
+
+### 3. 資源量指標値の年トレンド
+* **ノミナルの資源量指標値とVASTで標準化した推定資源量指標値を比較する**
+* mutate(type = "##")部分は凡例に反映される．必要に応じて適宜変更することができる
+#### plot_index()
+```
+# please change here --------------------------------------------
+vast_output_dirname = "///" #vastの推定結果が入っているディレクトリ
+category_name = c("spotted") #カテゴリーの名前（魚種名や銘柄など）
+fig_output_dirname = "///" #作図を入れるディレクトリ
+
+# load data and make data_frame ----------------------------------
+setwd(dir = vast_output_dirname)
+vast_index = read.csv("Table_for_SS3.csv") %>%
+  mutate(type = "Standardized") # 名前変更可
+
+# vastの結果が複数ある場合
+setwd(dir = ////)
+vast_index2 = read.csv("Table_for_SS3.csv") %>%
+  mutate(type = "Standardized2") # 名前変更可
+vast_index = rbind(vast_index, vast_index2)
+
+#ノミナルデータ
+DG = read.csv("Data_Geostat.csv")
+
+# make figures ----------------------------------
+plot_index(vast_index = vast_index,
+           DG = DG,
+           category_name = category_name)
+```
 
 
 <div style="page-break-before:always"></div>
 
-# Part Ⅲ: 応用モデル
+# Part Ⅲ: 複雑なモデル
 Part1では年の効果のみを入れた単純なモデルを単一種に適用した．Part3ではより複雑なモデルとして  
   (i) **catchabilityへの影響**
   (ii) **overdispersionへの影響**
@@ -655,14 +823,14 @@ Part1では年の効果のみを入れた単純なモデルを単一種に適用
 ### (i) catchabilityへの影響
 catchability（魚の採集率）は，漁具や船，月によって変化していることがある．ここではそのような現象をモデリングしてみる．
 * プログラムコードは『part3_catchability.txt』
-* 数式は『』
+* 数式は付録の(5)(6)式
 
 **なお漁具や船，月の効果を考慮したい場合には，『2. overdispersionへの影響』でも扱うことができる．『2. overdispersionへの影響』との違いは，漁具などは（直接生物量に影響するのではなく）catchabilityに影響すると考える点と，固定効果として推定する点である**
 
 ---
 
 #### 0. データの作成
- 各列に『年，CPUE（あるいは，アバンダンスと努力量），緯度，経度，catchabilityに影響する要因（漁具・船・月など）』が入ったデータフレーム（tidyデータ）を作成する．オブジェクト名は，dfとしたままでよい
+ 各列に『年，CPUE（あるいは，アバンダンスと努力量），緯度，経度，catchabilityに影響する要因（漁具・船・月など）』が入ったデータフレームを作成する．オブジェクト名はdfのままでよい
 
  CPUEデータの例
  |  year  |  cpue  |  lon  |  lat  | gear  |
@@ -737,7 +905,7 @@ Data_Geostat = df %>%
 ### (ii) overdispersionへの影響
 分散は，漁具や船，月によって期待していたよりも大きくなることがある（overdispersion; 過分散）．ここではそのような現象をモデリングしてみる．
 * プログラムコードは『part3_overdispersion.txt』
-* 数式は『』
+* 数式は付録の(7)(8)式
 
 **なお漁具や船，月の効果を考慮したい場合には，『1. catchabilitynへの影響』でも扱うことができる．『1. catchabilityへの影響』との違いは，漁具などは生物量の変動に影響すると考える点と，ランダム効果として推定する点である**  
 年と月の交互作用を考えたい場合にも，overdispersionへの影響として扱うことになる．
@@ -745,7 +913,7 @@ Data_Geostat = df %>%
 ---
 
 #### 0. データの作成
- 各列に『年，CPUE（あるいは，アバンダンスと努力量），緯度，経度，overdispersionに影響する要因（漁具・船・月など）』が入ったデータフレーム（tidyデータ）を作成する．オブジェクト名は，dfとしたままでよい  
+ 各列に『年，CPUE（あるいは，アバンダンスと努力量），緯度，経度，overdispersionに影響する要因（漁具・船・月など）』が入ったデータフレームを作成する．オブジェクト名はdfのままでよい  
  * 年と月の交互作用を考えたい場合には，年と月を組み合わせたfactor型（Rのデータ型の一つ．因子型とも言う．numericとかcharacterとか，そーゆーやつ）を作る．例えば，
 ```
 df = df %>% mutate(time = paste0("year", "month", sep = "_"))
@@ -800,8 +968,9 @@ Data_Geostat = df %>%
  ```
  * **VASTに渡すデータのオブジェクト名は，必ずData_Geostat**
  * **列名はオリジナルで作成せず，VAStのデフォルトに合わせる．また列名はキャメルケース（大文字始まり）で書く**
- * オブジェクト名がData_Geostatでない場合，列名をオリジナルで作成した場合，列名がキャメルケースでない場合は，以降のコードを修正する必要が出てくる（関数の中身も修正しなければいけないので，めちゃくちゃ大変）
- <br />
+ * オブジェクト名がData_Geostatでない場合，列名をオリジナルで作成した場合，列名がキャメルケースでない場合は，以降のコードを修正する必要が出てくる
+
+<div style="page-break-before:always"></div>
 
 #### 3. パラメータの設定
 #### 3.1 TMBに渡すデータを作成する
@@ -843,13 +1012,13 @@ Plot_Overdispersion(filename1 = paste0(DateDir, "Overdispersion"),
 ### (iii) 複数カテゴリーの解析 　　　　（修正必要）
 生物量の変動は互いに独立ではないこともあるため，複数の魚種を標準化する時，単一種モデルを魚種ごとに当てはめるよりも複数種モデルを当てはめた方が（推定バイアスが小さく）良いと考えられている（Thorson ###)．また同一種では，年齢別やサイズ別の生物量は互いに独立とは考え難い．ここでは複数のカテゴリー（種，年齢，サイズなど）を解析する．
 * プログラムコードは『part3_multispecies.txt』
-* 数式は『』
+* 数式は付録の(9)(10)式
 
 
 ---
 
 #### 0. データの作成
- 各列に『年，CPUE（あるいは，アバンダンスと努力量），緯度，経度，カテゴリー』が入ったデータフレーム（tidyデータ）を作成する．オブジェクト名は，dfとしたままでよい  
+ 各列に『年，CPUE（あるいは，アバンダンスと努力量），緯度，経度，カテゴリー』が入ったデータフレームを作成する．オブジェクト名は，dfのままでよい  
 
 
  CPUEデータの例
@@ -876,7 +1045,7 @@ Plot_Overdispersion(filename1 = paste0(DateDir, "Overdispersion"),
 ```
 FieldConfig = c(Omega1 = ___, Epsilon1 = ___, Omega2 = ___, Epsilon2 = ___)
 ```
-* カテゴリー（種，年齢，銘柄など）に共通の要因の数を設定する部分
+* カテゴリー（種，年齢，銘柄など）に共通する要因の数をいくつ推定するのかを設定する部分
 * 上限はカテゴリーの数
 * 多いほど計算負荷が大きくなる
 
@@ -904,7 +1073,7 @@ Data_Geostat = df %>%
  * **VASTに渡すデータのオブジェクト名は，必ずData_Geostat**
  * **列名はオリジナルで作成せず，VAStのデフォルトに合わせる．また列名はキャメルケース（大文字始まり）で書く．**<span style="color: red; ">カテゴリーに関する列は例外的にキャメルケースではない</span>
  * オブジェクト名がData_Geostatでない場合，列名をオリジナルで作成した場合は，以降のコードを修正する必要が出てくる（関数の中身も修正しなければいけないので，めちゃくちゃ大変）
- <br />
+<div style="page-break-before:always"></div>
 
 #### 3. パラメータの設定
 #### 3.1 TMBに渡すデータを作成する
@@ -915,7 +1084,7 @@ Data_Geostat = df %>%
   OverdispersionConfig = OverdispersionConfig,
   RhoConfig = RhoConfig,
   ObsModel = ObsModel,
-  c_iz = as.numeric(as.factor(Data_Geostat[, "spp"])) - 1, # カテゴリー数　ゼロ始まりに
+  c_iz = as.numeric(as.factor(Data_Geostat[, "spp"])) - 1, # カテゴリー数
   b_i = Data_Geostat[, 'Catch_KG'], # 応答変数（生物量）
   a_i = Data_Geostat[, 'AreaSwept_km2'], # 努力量（CPUEデータの場合は不要）
   s_i = Data_Geostat[, 'knot_i'] - 1, # knot
@@ -937,11 +1106,11 @@ Plot_factors(Report = Report,
              category_names = levels(DF[,"Sci"]),
              plotdir = DateFile)
 ```
-
+<div style="page-break-before:always"></div>
 ### (iv) 環境の影響
 VASTでは様々な環境要因を共変量として入れることができるが，Part Ⅲの(i)-(iii)に比べてプログラミング技術が必要である．なぜなら，`[knot, 年, 環境変数]`といった配列データを作成してTMBに渡さなければならないからである．調査・漁業と同時に観測された環境データを使用する場合もあれば，衛星データのように独立して観測された環境データを使用する場合もあるため，一般的なプログラミングコードを紹介することは難しい．そのため，ここではTMBへの渡し方のみを紹介する．（何のヒントにもならないが，配列データにはknotの情報が必要であるため，環境データの作成は『2.5 データフレームの保存』と『3.1 TMBに渡すデータを作成する』の間で行うことになる）
 * プログラムコードは『part3_env.txt』
-* 数式は『』
+* 数式は付録の(11)(12)式
 
 ---
 

@@ -1,4 +1,4 @@
-\documentclass[12pt]{article}
+\documentclass[11pt]{article}
 \usepackage{times}
 \usepackage{plext}
 \usepackage{cite}
@@ -7,17 +7,27 @@
 \usepackage{lineno}
 \usepackage[dvipdfmx]{graphicx}
 \usepackage{array, booktabs}
-\usepackage[top=10truemm,bottom=5truemm,left=30truemm,right=10truemm]{geometry}
+\usepackage[top=16truemm,bottom=5truemm,left=30truemm,right=10truemm]{geometry}
 \usepackage{threeparttable}
 \usepackage{amsmath}
 \usepackage{breqn}
+\pagestyle{myheadings}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
 \renewcommand{\figurename}{Fig.}
 \renewcommand{\tablename}{Table}
+
+\chead{付録}
+%\markboth{付録}{付録}
+
 \begin{document}
 %\setcounter{page}{1}
 \renewcommand\citeleft{(} 
 \renewcommand\citeright{)}
 
+{\huge{\section*{ワークショップで扱うモデル}}}
+%\vspace{5pt}
 一般式
 \begin{dmath}
 %\footnotesize
@@ -80,6 +90,49 @@ Part Ⅲ (i)
 \begin{dmath}
   p_2(i) = \beta_{2}(t_{i}) + \omega_2(s_i) + \varepsilon_2(s_i,t_i) + +\sum_{p = 1}^{n_p}\gamma_2(t_i,p)X(x_i,t_i,p)
 \end{dmath}
+
+\newpage
+{\huge{\section*{推定結果？}}}
+推定密度 $d^*$
+\begin{dmath}
+d^*(s,c,t) = r_{1}^*(s,c,t) \times r_{2}^*(s,c,t)
+\end{dmath}
+\hspace{1.5cm}CPUEや重量データの時
+%\begin{dmath}
+\begin{eqnarray}
+r_{1}(i) = \mathrm{logit^{-1}}(p_{1}(i)) \nonumber \\
+%\end{dmath}
+%\begin{dmath}
+r_{2}(i) = a_i \times \mathrm{log^{-1}}(p_{2}(i))
+%\end{dmath}
+\end{eqnarray}
+\hspace{1.5cm}個体数データの時
+\begin{eqnarray}
+r_{1}(i) = 1 - \mathrm{exp}(-a_i \times \mathrm{exp}(p_{1}(i))) \nonumber \\
+r_{2}(i) = \frac{a_{i} \times \mathrm{exp}(p_{1}(i))} {r_{1}(i)} \times \mathrm{exp}(p_{2}(i))
+\end{eqnarray}
+\hrulefill
+
+資源量指数 $I$
+\begin{dmath}
+I(c,t,l) = \sum_{x=1}^{n_x}(a(s,l) \times d^*(s,c,t)) 
+\end{dmath}
+\hrulefill
+
+有効面積 $A$
+\begin{eqnarray}
+A(c,t,l) = \frac{I(c,t,l)}{D(c,t,l)}
+\end{eqnarray}
+\hspace{1.5cm}$D$はbiomass-weighted average densityで
+\begin{eqnarray}
+D(c,t,l) = \sum_{x=1}^{n_x}\frac{a(x,l) \times d(x,c,t)}{I(c,t,l)} d(x,c,t)
+\end{eqnarray}
+\hrulefill
+
+重心 $Z$
+\begin{eqnarray}
+Z(c,t,l) = \sum_{x = 1}^{n_x}\left(\frac{a(x,l) \times d^{*}(x,c,t)}{I(c,t,l)}d^*(x,c,t) \right)
+\end{eqnarray}
 
 %\end{linenumbers}
 \end{document}
