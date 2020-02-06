@@ -92,10 +92,10 @@ Part Ⅲ (i)
 \end{dmath}
 
 \newpage
-{\huge{\section*{推定結果？}}}
-推定密度 $d^*$
+{\huge{\section*{導出パラメータ}}}
+推定局所密度 $d^*$
 \begin{dmath}
-d^*(s,c,t) = r_{1}^*(s,c,t) \times r_{2}^*(s,c,t)
+d^*(s,c,t) = r_{1}(s,c,t) \times r_{2}(s,c,t)
 \end{dmath}
 \hspace{1.5cm}CPUEや重量データの時
 %\begin{dmath}
@@ -125,13 +125,13 @@ A(c,t,l) = \frac{I(c,t,l)}{D(c,t,l)}
 \end{eqnarray}
 \hspace{1.5cm}$D$はbiomass-weighted average densityで
 \begin{eqnarray}
-D(c,t,l) = \sum_{x=1}^{n_x}\frac{a(x,l) \times d(x,c,t)}{I(c,t,l)} d(x,c,t)
+D(c,t,l) = \sum_{x=1}^{n_x} \left( \frac{a(s,l) \times d^*(s,c,t)}{I(c,t,l)} d^*(s,c,t) \right)
 \end{eqnarray}
 \hrulefill
 
 重心 $Z$
 \begin{eqnarray}
-Z(c,t,l) = \sum_{x = 1}^{n_x}\left(\frac{a(x,l) \times d^{*}(x,c,t)}{I(c,t,l)}d^*(x,c,t) \right)
+Z(c,t,m) = \sum_{x = 1}^{n_x}\frac{z(s,m) \times a(s,l) \times d^{*}(s,c,t)} {I(c,t,l)}
 \end{eqnarray}
 
 %\end{linenumbers}
