@@ -16,7 +16,7 @@
 金森由妃　（研究支援＠中央水研）
 </div>
 <div style="text-align: right;">
-Version 1.3.9000
+Version 1.4.9000
 </div>
 
 <div style="page-break-before:always"></div>
@@ -207,8 +207,8 @@ ObsModel = c(PostDist = ___, Link = ___)
 |   2  |  CPUE                    |  Gamma  |  デルタ型モデル<br />（遭遇率がlogit/CPUEがlog）  |  c(2, 0)  |
 |   3  |  重量                     |  Lognormal  |  デルタ型モデル<br />（遭遇率がlogit/重量がlog）  |  c(1, 0)  |
 |   4  |  重量                     |  Gamma  |  デルタ型モデル<br />（遭遇率がlogit/重量がlog）  |  c(2, 0)  |
-|   5  |  個体数                    |  Poisson  | デルタ型モデル<br />（遭遇率がlog/生物量がlog）  |  c(7, 1)  |
-|   6  |  個体数                    |  Negative bimomial  |  デルタ型モデル<br />（遭遇率がlog/生物量がlog）  |  c(5, 1)  |
+|   5  |  個体数                    |  Poisson  | デルタ型モデル<br />（遭遇率がlogit/個体数がlog）  |  c(7, 0)  |
+|   6  |  個体数                    |  Negative bimomial  |  デルタ型モデル<br />（遭遇率がlogit/個体数がlog）  |  c(5, 0)  |
 |  (7) |  遭遇率100%の年がある時                |    | 非デルタ型モデル   |  c(__, 3)  |
 |  (8) |  遭遇率100% or 0%の年がある時 (個体数)  |    | 非デルタ型モデル   |  c(__, 4)  |
 
