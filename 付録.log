@@ -1,10 +1,10 @@
-This is e-upTeX, Version 3.14159265-p3.8.0-u1.23-180226-2.6 (utf8.uptex) (TeX Live 2018) (preloaded format=uplatex 2018.5.16)  4 FEB 2020 10:45
+This is e-upTeX, Version 3.14159265-p3.8.0-u1.23-180226-2.6 (utf8.uptex) (TeX Live 2018) (preloaded format=uplatex 2018.5.16)  28 DEC 2020 10:41
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**eq01.tex
-(./eq01.tex
+**付録.tex
+(./付録.tex
 pLaTeX2e <2018-04-01u02>+1 (based on LaTeX2e <2018-04-01> patch level 2)
 Babel <3.18> and hyphenation patterns for 84 language(s) loaded.
 (/usr/local/texlive/2018/texmf-dist/tex/latex/base/article.cls
@@ -500,8 +500,8 @@ s
 \f@nch@O@olf=\skip73
 \f@nch@O@orf=\skip74
 )
-(./eq01.aux)
-\openout1 = `eq01.aux'.
+(./付録.aux)
+\openout1 = `付録.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
 LaTeX Font Info:    ... okay on input line 24.
@@ -605,18 +605,18 @@ Package Fancyhdr Warning: \headheight is too small (12.0pt):
  We now make it that large for the rest of the document.
  This may cause the page layout to be inconsistent, however.
 
-[2] (./eq01.aux)
+[2] (./付録.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
  11267 strings out of 493270
- 206674 string characters out of 6145018
- 263462 words of memory out of 5000000
+ 206692 string characters out of 6145018
+ 263454 words of memory out of 5000000
  15154 multiletter control sequences out of 15000+600000
  540043 words of font info for 65 fonts, out of 8000000 for 9000
  929 hyphenation exceptions out of 8191
- 36i,10n,43p,10377b,324s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,10n,43p,10379b,324s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on eq01.dvi (2 pages, 9336 bytes).
+Output written on 付録.dvi (2 pages, 9332 bytes).
